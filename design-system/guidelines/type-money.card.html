@@ -1,0 +1,27 @@
+<!-- @dsCard group="Type" viewport="700x170" name="Tabular money" subtitle="Two decimals, lining tabular numerals, right-aligned" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 24px; }
+  table { border-collapse: collapse; }
+  td { padding: 6px 16px; font-size: 17px; color: var(--text-primary); border-bottom: var(--border-thin) solid var(--border-soft); }
+  .desc { color: var(--text-body); font-size: 15px; }
+  .amt { text-align: right; font-variant-numeric: tabular-nums lining-nums; }
+  .meta { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin-bottom: 14px; display: block; }
+  .pos { color: var(--seaweed); }
+  .att { color: var(--amethyst); }
+</style>
+</head>
+<body>
+<span class="meta">Right-aligned, decimals align across rows</span>
+<table>
+  <tr><td class="desc">Farm Boy run</td><td class="amt">$84.32</td></tr>
+  <tr><td class="desc">SkipTheDishes</td><td class="amt att">$1,042.18</td></tr>
+  <tr><td class="desc">OC Transpo pass</td><td class="amt">$98.00</td></tr>
+  <tr><td class="desc">Payday</td><td class="amt pos">$2,400.00</td></tr>
+</table>
+</body>
+</html>

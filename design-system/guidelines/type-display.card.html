@@ -1,0 +1,19 @@
+<!-- @dsCard group="Type" viewport="700x180" name="Pixel display — Silkscreen" subtitle="Page titles & large money numerals only" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .px { font-family: var(--font-pixel); color: var(--text-primary); letter-spacing: var(--tracking-pixel); line-height: 1.1; }
+  .meta { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); }
+</style>
+</head>
+<body>
+<span class="meta">Page title · --pixel-lg 22px</span>
+<span class="px" style="font-size:22px">Dashboard</span>
+<span class="meta">Hero numeral · --pixel-2xl 56px · tabular</span>
+<span class="px tnum" style="font-size:56px">$1,842.57</span>
+</body>
+</html>

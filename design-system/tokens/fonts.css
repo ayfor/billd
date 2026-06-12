@@ -1,0 +1,15 @@
+/* ============================================================
+   billd · WEBFONTS
+   Pixel/bitmap display + modern sans body.
+   Served from Google Fonts. If you need offline binaries,
+   replace these @import lines with local @font-face rules.
+
+   SUBSTITUTION NOTE: brief calls for "Silkscreen / Pixelify Sans
+   energy" for display. We ship BOTH:
+     • Silkscreen  — bitmap face for page titles + big money numerals
+     • Pixelify Sans — softer pixel face, available as an alt display
+   Body is Inter (explicitly an "Inter-style sans, tabular numerals"
+   brand requirement).
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap');

@@ -1,0 +1,23 @@
+<!-- @dsCard group="Spacing" viewport="700x200" name="Borders, notch & block shadow" subtitle="Square corners, notched panels, hard offset shadows — no blur" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 28px; display: flex; gap: 36px; align-items: center; }
+  .item { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .tok { font-size: 11px; color: var(--text-muted); }
+  .b1 { width: 90px; height: 60px; background: var(--surface-card); border: 1px solid var(--border-strong); }
+  .b2 { width: 90px; height: 60px; background: var(--surface-card); border: var(--border-px) solid var(--border-strong); }
+  .b3 { width: 90px; height: 60px; background: var(--surface-card); border: var(--border-chunk) solid var(--interactive); }
+  .panel { width: 90px; height: 60px; }
+</style>
+</head>
+<body>
+<div class="item"><div class="b1"></div><span class="tok">1px rule</span></div>
+<div class="item"><div class="b2"></div><span class="tok">2px panel</span></div>
+<div class="item"><div class="b3"></div><span class="tok">3px emphasis</span></div>
+<div class="item"><div class="px-raise"><div class="px-panel panel"></div></div><span class="tok">notched + block shadow</span></div>
+</body>
+</html>

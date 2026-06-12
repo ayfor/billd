@@ -1,0 +1,103 @@
+<!-- @template name="billd app shell" description="Dark-first billd app frame — sidebar nav, topbar with ⌘K add, empty content slot to fill in." -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>billd — app shell</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="./ds-base.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: var(--canvas, #272727); }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  // ds-base.js appends the bundle asynchronously — wait for the namespace.
+  function whenReady(cb) {
+    if (window.BilldDesignSystem_9669dd) return cb(window.BilldDesignSystem_9669dd);
+    setTimeout(() => whenReady(cb), 30);
+  }
+
+  whenReady((DS) => {
+    const { NavItem, Button, Select, Card, PixelDivider } = DS;
+
+    function Shell() {
+      const [view, setView] = React.useState('dashboard');
+      const items = [
+        { id: 'dashboard',   icon: 'nav_dashboard',   label: 'Dashboard' },
+        { id: 'expenses',    icon: 'nav_expenses',    label: 'Expenses' },
+        { id: 'budgets',     icon: 'nav_budgets',     label: 'Budgets' },
+        { id: 'projections', icon: 'nav_projections', label: 'Projections' },
+      ];
+      const titles = { dashboard: 'Dashboard', expenses: 'Expenses', budgets: 'Budgets', projections: 'Projections' };
+
+      return (
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+          <aside style={{
+            width: 'var(--sidebar-w)', flex: '0 0 auto',
+            borderRight: 'var(--border-px) solid var(--border-strong)',
+            background: 'var(--surface-sunk)', padding: 'var(--space-5) var(--space-4)',
+            display: 'flex', flexDirection: 'column',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: '0 var(--space-2) var(--space-6)' }}>
+              <img src="../../assets/logo-mark.svg" width="28" height="28" style={{ imageRendering: 'pixelated' }} alt="billd" />
+              <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 20, color: 'var(--text-primary)', letterSpacing: 'var(--tracking-pixel)' }}>
+                bill<span style={{ color: 'var(--interactive)' }}>d</span>
+              </span>
+            </div>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+              {items.map((it) => (
+                <NavItem key={it.id} icon={it.icon} label={it.label}
+                         active={view === it.id} onClick={() => setView(it.id)}
+                         style={{ cursor: 'pointer' }} />
+              ))}
+            </nav>
+            <div style={{ marginTop: 'auto' }}>
+              <NavItem icon="settings" label="Settings" onClick={() => {}} style={{ cursor: 'pointer' }} />
+            </div>
+          </aside>
+
+          <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+            <header style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              gap: 'var(--space-4)', padding: 'var(--space-6) var(--space-8)',
+              borderBottom: 'var(--border-px) solid var(--border-strong)',
+            }}>
+              <h1 style={{ margin: 0, fontFamily: 'var(--font-pixel)', fontSize: 'var(--pixel-lg)',
+                           color: 'var(--text-primary)', letterSpacing: 'var(--tracking-pixel)', fontWeight: 400 }}>
+                {titles[view]}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <div style={{ width: 150 }}>
+                  <Select options={['June 2026', 'May 2026']} aria-label="Month" />
+                </div>
+                <Button variant="primary" icon="plus">Add expense</Button>
+              </div>
+            </header>
+
+            {/* ───── Fill this content area in ───── */}
+            <div style={{ flex: 1, padding: 'var(--space-8)', display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+              <PixelDivider src="../../assets/pixel-divider.svg" />
+              <Card title="START HERE">
+                <p style={{ margin: 0, color: 'var(--text-body)', fontSize: 15, lineHeight: 1.55 }}>
+                  Replace this with your view. Compose Card, Money, ProgressBar, Badge,
+                  CategoryPill and Table from <code style={{ color: 'var(--interactive)' }}>window.BilldDesignSystem_9669dd</code>.
+                  Keep money two-decimal &amp; tabular; over-budget reads in calm Amethyst, never red.
+                </p>
+              </Card>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Shell />);
+  });
+</script>
+</body>
+</html>

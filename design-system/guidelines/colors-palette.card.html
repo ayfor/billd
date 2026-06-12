@@ -1,0 +1,26 @@
+<!-- @dsCard group="Colors" viewport="700x170" name="Core palette" subtitle="Exactly 5 hues — no others exist" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 22px; }
+  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .sw { display: flex; flex-direction: column; gap: 8px; }
+  .chip { height: 64px; border: var(--border-px) solid var(--border-strong); }
+  .nm { font-size: 13px; color: var(--text-primary); font-weight: 600; }
+  .hex { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; text-transform: uppercase; }
+  .role { font-size: 11px; color: var(--text-faint); line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="sw"><div class="chip" style="background:var(--shadow-grey)"></div><span class="nm">Shadow Grey</span><span class="hex">#272727</span><span class="role">Canvas + card grounds</span></div>
+  <div class="sw"><div class="chip" style="background:var(--lavender-mist)"></div><span class="nm">Lavender Mist</span><span class="hex">#efe9f4</span><span class="role">Body text + foreground</span></div>
+  <div class="sw"><div class="chip" style="background:var(--electric-sapphire)"></div><span class="nm">Electric Sapphire</span><span class="hex">#5863f8</span><span class="role">Interactive, focus, links</span></div>
+  <div class="sw"><div class="chip" style="background:var(--seaweed)"></div><span class="nm">Seaweed</span><span class="hex">#00b295</span><span class="role">Positive money only</span></div>
+  <div class="sw"><div class="chip" style="background:var(--amethyst)"></div><span class="nm">Amethyst</span><span class="hex">#935fa7</span><span class="role">Calm attention / over</span></div>
+</div>
+</body>
+</html>

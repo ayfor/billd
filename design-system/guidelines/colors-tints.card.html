@@ -1,0 +1,45 @@
+<!-- @dsCard group="Colors" viewport="700x160" name="Semantic tints" subtitle="Tints are opacity-over-canvas only — never new colors" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 22px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .glabel { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); }
+  .stack { display: flex; gap: 8px; align-items: center; }
+  .chip { width: 48px; height: 36px; border: var(--border-thin) solid var(--border-soft); }
+  .note { font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="col">
+    <span class="glabel">Sapphire — interactive</span>
+    <div class="stack">
+      <div class="chip" style="background:var(--interactive)"></div>
+      <div class="chip" style="background:var(--interactive-tint)"></div>
+      <span class="note">fill · 16% tint well</span>
+    </div>
+  </div>
+  <div class="col">
+    <span class="glabel">Seaweed — positive</span>
+    <div class="stack">
+      <div class="chip" style="background:var(--positive)"></div>
+      <div class="chip" style="background:var(--positive-tint)"></div>
+      <span class="note">fill · 16% tint</span>
+    </div>
+  </div>
+  <div class="col">
+    <span class="glabel">Amethyst — attention</span>
+    <div class="stack">
+      <div class="chip" style="background:var(--attention)"></div>
+      <div class="chip" style="background:var(--attention-tint)"></div>
+      <span class="note">fill · 18% tint</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
