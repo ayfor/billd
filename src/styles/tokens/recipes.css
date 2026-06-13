@@ -1,0 +1,131 @@
+/* ============================================================
+   billd · COMPONENT RECIPES
+   Real CSS for interactive states (hover/active/focus) that
+   inline styles can't express. Components apply these classes.
+   Ships to consumers via styles.css.
+   ============================================================ */
+
+/* ---------- Button ---------- */
+.billd-btn {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: var(--border-px) solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 120ms steps(2), transform 80ms linear,
+              filter 120ms linear, border-color 120ms linear;
+  padding: 0 var(--space-4);
+  height: var(--control-md);
+}
+.billd-btn:active { transform: translate(1px, 1px); }
+.billd-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.billd-btn:disabled:active { transform: none; }
+
+/* size variants */
+.billd-btn--sm { height: var(--control-sm); font-size: var(--text-xs); padding: 0 var(--space-3); }
+.billd-btn--lg { height: var(--control-lg); font-size: var(--text-md); padding: 0 var(--space-5); }
+
+/* primary — sapphire fill + block shadow */
+.billd-btn--primary {
+  background: var(--interactive);
+  color: var(--interactive-fg);
+  box-shadow: var(--shadow-block-sm);
+}
+.billd-btn--primary:hover { background: var(--interactive-hover); }
+.billd-btn--primary:active { background: var(--interactive-press); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+
+/* secondary — outlined */
+.billd-btn--secondary {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-block-sm);
+}
+.billd-btn--secondary:hover { background: var(--surface-raised); border-color: var(--interactive); }
+.billd-btn--secondary:active { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+
+/* ghost — text only */
+.billd-btn--ghost {
+  background: transparent;
+  color: var(--text-body);
+}
+.billd-btn--ghost:hover { background: rgba(var(--lavender-mist-rgb), 0.08); color: var(--text-primary); }
+
+/* ---------- IconButton ---------- */
+.billd-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-md);
+  height: var(--control-md);
+  border: var(--border-px) solid var(--border-strong);
+  background: var(--surface-card);
+  color: var(--text-body);
+  cursor: pointer;
+  transition: background-color 120ms steps(2), color 120ms linear,
+              border-color 120ms linear, transform 80ms linear;
+}
+.billd-iconbtn:hover { background: var(--surface-raised); color: var(--text-primary); border-color: var(--interactive); }
+.billd-iconbtn:active { transform: translate(1px, 1px); }
+.billd-iconbtn--ghost { border-color: transparent; background: transparent; }
+.billd-iconbtn--ghost:hover { background: rgba(var(--lavender-mist-rgb), 0.08); }
+
+/* ---------- Input / Select ---------- */
+.billd-field {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  color: var(--text-primary);
+  background: var(--surface-sunk);
+  border: var(--border-px) solid var(--border-strong);
+  border-radius: 0;
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  width: 100%;
+  transition: border-color 120ms linear, background-color 120ms linear;
+}
+.billd-field::placeholder { color: var(--text-faint); }
+.billd-field:hover { border-color: rgba(var(--lavender-mist-rgb), 0.32); }
+.billd-field:focus { outline: none; border-color: var(--interactive); background: var(--canvas); }
+.billd-field--lg { height: var(--control-lg); font-size: var(--text-lg); }
+
+.billd-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: var(--space-8);
+}
+
+/* ---------- Nav item ---------- */
+.billd-navitem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  border: var(--border-px) solid transparent;
+  cursor: pointer;
+  transition: color 120ms linear, background-color 120ms linear, border-color 120ms linear;
+}
+.billd-navitem:hover { color: var(--text-primary); background: rgba(var(--lavender-mist-rgb), 0.05); }
+.billd-navitem[aria-current="true"],
+.billd-navitem--active {
+  color: var(--interactive-fg);
+  background: var(--interactive-tint);
+  border-color: rgba(var(--electric-sapphire-rgb), 0.5);
+}
+
+/* ---------- Table rows ---------- */
+.billd-row { transition: background-color 100ms linear; }
+.billd-row:hover { background: var(--surface-raised); }

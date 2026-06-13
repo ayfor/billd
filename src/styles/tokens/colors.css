@@ -1,0 +1,63 @@
+/* ============================================================
+   billd · COLOR TOKENS
+   Exactly 5 hues. No additional colors anywhere.
+   Tints are produced ONLY by layering a hue at reduced opacity
+   over the Shadow Grey canvas — never by mixing new colors.
+   ============================================================ */
+
+:root {
+  /* --- Base palette (the only 5 hues that exist) --- */
+  --shadow-grey:        #272727;  /* app canvas + card grounds          */
+  --lavender-mist:      #efe9f4;  /* body text + primary foreground     */
+  --electric-sapphire:  #5863f8;  /* interactive: buttons, links, focus */
+  --seaweed:            #00b295;  /* positive money signals only        */
+  --amethyst:           #935fa7;  /* calm attention / over-budget       */
+
+  /* --- RGB channels (for opacity tints over the canvas) --- */
+  --shadow-grey-rgb:       39, 39, 39;        /* @kind color */
+  --lavender-mist-rgb:     239, 233, 244;      /* @kind color */
+  --electric-sapphire-rgb: 88, 99, 248;        /* @kind color */
+  --seaweed-rgb:           0, 178, 149;         /* @kind color */
+  --amethyst-rgb:          147, 95, 167;        /* @kind color */
+
+  /* --- Canvas / surface ladder ---------------------------------
+     Cards sit on the same Shadow Grey as the canvas; separation
+     comes from borders + a hair of lifted lavender, not new greys. */
+  --canvas:        var(--shadow-grey);
+  --surface-card:  #2d2d2d;                                   /* shadow grey lifted ~3% */
+  --surface-sunk:  #1f1f1f;                                   /* wells, table stripes   */
+  --surface-raised:#333333;                                   /* hover / active rows    */
+
+  /* --- Foreground ladder (lavender at descending opacity) --- */
+  --text-primary:   var(--lavender-mist);                     /* headings, money       */
+  --text-body:      rgba(var(--lavender-mist-rgb), 0.82);     /* paragraphs            */
+  --text-muted:     rgba(var(--lavender-mist-rgb), 0.56);     /* labels, captions      */
+  --text-faint:     rgba(var(--lavender-mist-rgb), 0.34);     /* hints, placeholders   */
+
+  /* --- Lines & borders (pixel panel borders) --- */
+  --border-strong:  rgba(var(--lavender-mist-rgb), 0.22);     /* 2px panel borders     */
+  --border-soft:    rgba(var(--lavender-mist-rgb), 0.12);     /* dividers, table rules */
+  --border-faint:   rgba(var(--lavender-mist-rgb), 0.06);     /* chart gridlines       */
+
+  /* --- Interactive (Sapphire) --- */
+  --interactive:        var(--electric-sapphire);
+  --interactive-fg:     var(--lavender-mist);                 /* text on sapphire fill */
+  --interactive-hover:  #6a74f9;                              /* sapphire lifted       */
+  --interactive-press:  #4751e6;                              /* sapphire deepened     */
+  --interactive-tint:   rgba(var(--electric-sapphire-rgb), 0.16); /* nav active well   */
+  --focus-ring:         var(--electric-sapphire);
+
+  /* --- Positive (Seaweed) — money only --- */
+  --positive:        var(--seaweed);
+  --positive-tint:   rgba(var(--seaweed-rgb), 0.16);
+  --positive-track:  rgba(var(--seaweed-rgb), 0.22);
+
+  /* --- Attention (Amethyst) — over-budget, calm --- */
+  --attention:       var(--amethyst);
+  --attention-tint:  rgba(var(--amethyst-rgb), 0.18);
+  --attention-track: rgba(var(--amethyst-rgb), 0.26);
+
+  /* --- Block shadow (hard, no blur) --- */
+  --shadow-block:    4px 4px 0 0 rgba(0, 0, 0, 0.45);
+  --shadow-block-sm: 2px 2px 0 0 rgba(0, 0, 0, 0.40);
+}
