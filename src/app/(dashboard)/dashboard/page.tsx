@@ -2,6 +2,8 @@ import Link from "next/link";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { dashboardSummary } from "@/lib/queries/dashboard";
+import { dailyCumulative, projectMonthEnd, daysInCurrentMonth } from "@/lib/queries/spendSeries";
+import { SpendChart, type ChartPoint } from "@/components/SpendChart";
 import { formatCents } from "@/lib/money";
 import { BudgetBar } from "@/components/BudgetBar";
 import { CategoryPill } from "@/components/CategoryPill";
@@ -15,6 +17,20 @@ export default async function DashboardPage() {
   ]);
 
   const { spentCents, expectedCents, budgets, recent } = summary;
+  const now = new Date();
+  const cumulative = await dailyCumulative(user.id, now);
+  const today = now.getUTCDate();
+  const dim = daysInCurrentMonth(now);
+  const projectedEnd = projectMonthEnd(spentCents, now);
+  const chartPoints: ChartPoint[] = [];
+  for (let day = 1; day <= dim; day++) {
+    const actualPt = cumulative.find((c) => c.day === day);
+    chartPoints.push({
+      day,
+      actual: day <= today ? (actualPt ? actualPt.cents : 0) : null,
+      projected: day === today ? spentCents : day > today ? Math.round(spentCents + ((projectedEnd - spentCents) * (day - today)) / (dim - today || 1)) : null,
+    });
+  }
   const month = new Date().toLocaleDateString("en-CA", { month: "long", year: "numeric", timeZone: "UTC" });
   const ratio = expectedCents > 0 ? spentCents / expectedCents : 0;
   const topBudgets = budgets.slice(0, 4);
@@ -58,6 +74,14 @@ export default async function DashboardPage() {
           ))}
         </div>
       )}
+
+      <div className="px-panel px-raise flex flex-col gap-3 p-6">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold" style={{ color: "var(--text-muted)", letterSpacing: "0.06em" }}>SPEND VS PROJECTION</span>
+          <Link href="/expenses" className="text-xs" style={{ color: "var(--electric-sapphire)" }}>View expenses</Link>
+        </div>
+        <SpendChart points={chartPoints} expectedCents={expectedCents} today={today} empty={spentCents === 0} />
+      </div>
 
       <RecentExpenses recent={recent} categories={categories} />
     </div>
