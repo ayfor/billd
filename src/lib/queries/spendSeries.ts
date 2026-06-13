@@ -41,3 +41,28 @@ export async function dailyCumulative(userId: string, now: Date): Promise<Cumula
 export function daysInCurrentMonth(now: Date) {
   return daysInMonth(now);
 }
+
+export type ProjectionStatus = {
+  tooEarly: boolean;
+  projectedCents: number;
+  onPace: boolean;
+  label: string;
+  tone: "positive" | "attention" | "muted";
+};
+
+// Projection panel state. Reuses projectMonthEnd so the chart endpoint and this
+// numeral are always the same number. "Too early to call" under 3 days elapsed.
+export function projectionStatus(spentCents: number, expectedCents: number, now: Date): ProjectionStatus {
+  const elapsed = now.getUTCDate();
+  if (elapsed < 3) {
+    return { tooEarly: true, projectedCents: 0, onPace: true, label: "Too early to call", tone: "muted" };
+  }
+  const projectedCents = projectMonthEnd(spentCents, now);
+  if (expectedCents <= 0) {
+    return { tooEarly: false, projectedCents, onPace: true, label: "Projected month end", tone: "muted" };
+  }
+  const onPace = projectedCents <= expectedCents;
+  return onPace
+    ? { tooEarly: false, projectedCents, onPace, label: "On pace · under budget", tone: "positive" }
+    : { tooEarly: false, projectedCents, onPace, label: "Trending over · review budgets", tone: "attention" };
+}

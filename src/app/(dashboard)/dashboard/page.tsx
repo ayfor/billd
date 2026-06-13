@@ -2,8 +2,9 @@ import Link from "next/link";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { dashboardSummary } from "@/lib/queries/dashboard";
-import { dailyCumulative, projectMonthEnd, daysInCurrentMonth } from "@/lib/queries/spendSeries";
+import { dailyCumulative, projectMonthEnd, daysInCurrentMonth, projectionStatus } from "@/lib/queries/spendSeries";
 import { SpendChart, type ChartPoint } from "@/components/SpendChart";
+import { ProjectionPanel } from "@/components/ProjectionPanel";
 import { formatCents } from "@/lib/money";
 import { BudgetBar } from "@/components/BudgetBar";
 import { CategoryPill } from "@/components/CategoryPill";
@@ -22,6 +23,7 @@ export default async function DashboardPage() {
   const today = now.getUTCDate();
   const dim = daysInCurrentMonth(now);
   const projectedEnd = projectMonthEnd(spentCents, now);
+  const projection = projectionStatus(spentCents, expectedCents, now);
   const chartPoints: ChartPoint[] = [];
   for (let day = 1; day <= dim; day++) {
     const actualPt = cumulative.find((c) => c.day === day);
@@ -44,7 +46,8 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <div className="px-panel px-raise flex flex-col gap-3 p-6">
+      <div className="flex flex-col gap-6 lg:flex-row">
+      <div className="px-panel px-raise flex flex-1 flex-col gap-3 p-6">
         <span className="text-xs font-bold" style={{ color: "var(--text-muted)", letterSpacing: "0.06em" }}>TOTAL SPENT — {month.toUpperCase()}</span>
         <span style={{ fontFamily: "var(--font-pixel)", fontSize: "var(--pixel-2xl)", color: "var(--text-primary)", lineHeight: 1 }} className="tnum">{formatCents(spentCents)}</span>
         {expectedCents > 0 ? (
@@ -55,6 +58,8 @@ export default async function DashboardPage() {
         ) : (
           <Link href="/budgets" className="text-sm" style={{ color: "var(--electric-sapphire)" }}>Set budgets to unlock projections →</Link>
         )}
+      </div>
+        <ProjectionPanel status={projection} />
       </div>
 
       {topBudgets.length > 0 && (
