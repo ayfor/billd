@@ -1,0 +1,75 @@
+/* ============================================================
+   billd · BASE & PIXEL PRIMITIVES
+   Reset + the shared pixel-skin helpers every surface uses.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Crisp pixel imagery — no anti-aliasing, no blur. */
+.pixelated,
+img.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Money & data: tabular lining figures, right-aligned by default. */
+.tnum {
+  font-feature-settings: var(--num-tabular);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ----- Notched pixel panel ------------------------------------
+   The signature billd surface: chunky 2px border with the four
+   corners notched off, like a cross-stitch panel. Uses two clips
+   so the border itself follows the notch.                        */
+.px-panel {
+  position: relative;
+  background: var(--surface-card);
+  border: var(--border-px) solid var(--border-strong);
+  --notch: 6px;
+  clip-path: polygon(
+    var(--notch) 0, calc(100% - var(--notch)) 0,
+    100% var(--notch), 100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%, var(--notch) 100%,
+    0 calc(100% - var(--notch)), 0 var(--notch)
+  );
+}
+
+/* Hard block shadow wrapper (clip-path can't cast box-shadow, so
+   wrap a notched panel in .px-raise to get the offset block). */
+.px-raise {
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.45));
+}
+.px-raise-sm {
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.40));
+}
+
+/* Focus ring — sapphire, hard offset, never blurred. */
+:focus-visible {
+  outline: var(--border-px) solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--interactive);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+::selection {
+  background: var(--interactive-tint);
+  color: var(--text-primary);
+}

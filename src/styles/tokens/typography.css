@@ -1,0 +1,48 @@
+/* ============================================================
+   billd · TYPOGRAPHY TOKENS
+   Two worlds, one rule:
+   - PIXEL (Silkscreen): page titles + large money numerals only.
+   - MODERN (Inter): everything else — body, labels, tables, inputs.
+   Money always uses tabular, lining numerals.
+   ============================================================ */
+
+:root {
+  /* --- Families --- */
+  --font-pixel:    'Silkscreen', 'Pixelify Sans', monospace;     /* titles + hero numerals */
+  --font-pixel-alt:'Pixelify Sans', 'Silkscreen', monospace;     /* softer pixel accents    */
+  --font-sans:     'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* --- Tabular numerals (money / data) --- */
+  --num-tabular: "tnum" 1, "lnum" 1;   /* @kind other */
+
+  /* --- Type scale (modern sans, body world) --- */
+  --text-2xs: 11px;   /* micro labels, table meta      */
+  --text-xs:  12px;   /* captions, pill text           */
+  --text-sm:  13px;   /* secondary body, table cells   */
+  --text-md:  15px;   /* default body                  */
+  --text-lg:  17px;   /* lead paragraph, card titles   */
+  --text-xl:  20px;   /* section headers (sans)        */
+
+  /* --- Pixel display scale (Silkscreen renders ~1.4x tall) --- */
+  --pixel-sm:   13px;  /* nav labels, small pixel tags  */
+  --pixel-md:   16px;  /* card eyebrow titles           */
+  --pixel-lg:   22px;  /* page titles                   */
+  --pixel-xl:   34px;  /* large money numerals          */
+  --pixel-2xl:  56px;  /* hero money numeral            */
+
+  /* --- Weights --- */
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+  --weight-bold:    700;
+
+  /* --- Line heights --- */
+  --leading-tight: 1.1;
+  --leading-snug:  1.3;
+  --leading-body:  1.55;
+
+  /* --- Letter spacing --- */
+  --tracking-pixel:  0.02em;   /* Silkscreen breathing room   */
+  --tracking-label:  0.06em;   /* uppercase sans labels       */
+  --tracking-tight: -0.01em;   /* large sans headings         */
+}

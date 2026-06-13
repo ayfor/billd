@@ -1,0 +1,39 @@
+/* ============================================================
+   billd · SPACING, SIZING & SHAPE TOKENS
+   Everything snaps to a 4px pixel grid (8px is the working unit).
+   Pixel art = NO rounded corners. Separation comes from chunky
+   2px borders, notched corners, and hard block shadows.
+   ============================================================ */
+
+:root {
+  /* --- Spacing scale (4px grid) --- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* --- Border widths (chunky pixel panels) --- */
+  --border-thin:  1px;   /* table rules, soft dividers   */
+  --border-px:    2px;   /* standard panel border        */
+  --border-chunk: 3px;   /* emphasised / decorative       */
+
+  /* --- Radius: pixel art has none. Notched corners instead. --- */
+  --radius-none: 0;
+  --notch:       6px;    /* corner-notch size for panels  */
+
+  /* --- Control sizing (hit targets ≥ 44px on touch surfaces) --- */
+  --control-sm: 32px;
+  --control-md: 40px;
+  --control-lg: 44px;
+
+  /* --- Layout --- */
+  --sidebar-w:   240px;
+  --content-max: 1080px;
+  --pixel-bar-h: 14px;   /* pixelated progress bar height */
+}
