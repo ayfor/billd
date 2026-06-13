@@ -100,7 +100,7 @@ export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
             </Field>
           </div>
 
-          <div className="mt-1 flex items-center justify-between">
+          <div className="mt-1 flex items-end justify-between">
             {mode === "edit" ? (
               confirmDelete ? (
                 <span className="flex items-center gap-2 text-xs" style={{ color: "var(--amethyst)" }}>
