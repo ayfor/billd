@@ -129,3 +129,29 @@
 /* ---------- Table rows ---------- */
 .billd-row { transition: background-color 100ms linear; }
 .billd-row:hover { background: var(--surface-raised); }
+
+
+/* ---------- Input (billd) ---------- */
+.billd-input {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--surface-sunk);
+  border: var(--border-px) solid var(--border-strong);
+  border-radius: 0;
+  padding: 0 var(--space-3);
+  height: var(--control-md);
+  width: 100%;
+  outline: none;
+}
+.billd-input::placeholder { color: var(--text-faint); }
+.billd-input:focus { border-color: var(--focus-ring); }
+
+/* ---------- Button modifiers (billd) ---------- */
+.billd-btn--primary { background: var(--interactive); color: var(--interactive-fg); border-color: var(--border-strong); }
+.billd-btn--primary:hover { background: var(--interactive-hover); }
+.billd-btn--primary:active { background: var(--interactive-press); }
+.billd-btn--ghost { background: transparent; color: var(--electric-sapphire); border-color: var(--electric-sapphire); }
+
+/* ---------- Raised (hard block shadow on notched panels) ---------- */
+.px-raise { filter: drop-shadow(var(--shadow-block)); }
