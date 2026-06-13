@@ -5,6 +5,10 @@
 ```mermaid
 erDiagram
     USER ||--o{ CATEGORY : owns
+    USER ||--o{ EXPENSE : owns
+    USER ||--o{ BUDGET : sets
+    CATEGORY ||--o{ EXPENSE : classifies
+    CATEGORY ||--o{ BUDGET : limits
     USER {
         string id PK
         string email UK
@@ -22,8 +26,27 @@ erDiagram
         datetime createdAt
         datetime updatedAt
     }
-    %% S2.1 adds EXPENSE (FK userId, categoryId; amountCents Int)
-    %% S4.1 adds BUDGET; S6.1 adds RECURRING_TEMPLATE + POSTING_LEDGER
+    EXPENSE {
+        string id PK
+        string userId FK
+        string categoryId FK
+        int amountCents
+        string description
+        date date
+        datetime createdAt
+        datetime updatedAt
+    }
+    BUDGET {
+        string id PK
+        string userId FK
+        string categoryId FK
+        int amountCents
+        string timespan "monthly|yearly"
+        datetime createdAt
+        datetime updatedAt
+    }
+    %% unique: BUDGET(userId, categoryId, timespan)
+    %% S6.1 adds RECURRING_TEMPLATE + POSTING_LEDGER
 ```
 
 ## Conventions

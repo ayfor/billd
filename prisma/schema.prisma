@@ -19,6 +19,7 @@ model User {
   passwordHash String
   categories   Category[]
   expenses     Expense[]
+  budgets      Budget[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -34,9 +35,26 @@ model Category {
   updatedAt DateTime @updatedAt
 
   expenses  Expense[]
+  budgets   Budget[]
 
   @@unique([userId, name])
   @@index([userId])
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  amountCents Int
+  timespan    String   // monthly | yearly
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, categoryId, timespan])
+  @@index([userId])
+  @@index([categoryId])
 }
 
 model Expense {
