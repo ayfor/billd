@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createExpense, deleteExpense, updateExpense, type ExpenseFormState } from "@/app/(dashboard)/expenses/actions";
+import { maskAmount } from "@/lib/amountMask";
 
 export type EditableExpense = {
   id: string;
@@ -15,12 +16,13 @@ type Props = {
   mode: "create" | "edit";
   categories: { id: string; name: string }[];
   expense?: EditableExpense;
+  defaultCategoryId?: string;
   onClose: () => void;
 };
 
 const initial: ExpenseFormState = {};
 
-export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
+export function ExpenseModal({ mode, categories, expense, defaultCategoryId, onClose }: Props) {
   const baseAction = mode === "edit" && expense ? updateExpense.bind(null, expense.id) : createExpense;
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -58,10 +60,18 @@ export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
     return () => clearTimeout(t);
   }, [flash]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const v = state.values;
   const amount = v?.amount ?? (expense ? (expense.amountCents / 100).toFixed(2) : "");
   const desc = v?.description ?? expense?.description ?? "";
-  const cat = v?.categoryId ?? expense?.categoryId ?? categories[0]?.id ?? "";
+  const cat = v?.categoryId ?? expense?.categoryId ?? defaultCategoryId ?? categories[0]?.id ?? "";
   const date = v?.date ?? (expense?.dateISO ? expense.dateISO.slice(0, 10) : today);
 
   return (
@@ -84,7 +94,7 @@ export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
           {state.errors?.form && <p className="text-xs" style={{ color: "var(--amethyst)" }}>{state.errors.form}</p>}
 
           <Field label="AMOUNT" error={state.errors?.amount}>
-            <input ref={amountRef} name="amount" inputMode="decimal" defaultValue={amount} placeholder="$ 0.00" className="billd-input" autoFocus />
+            <input ref={amountRef} name="amount" inputMode="decimal" defaultValue={amount} placeholder="$ 0.00" className="billd-input" autoFocus onChange={(e) => { e.target.value = maskAmount(e.target.value); }} />
           </Field>
           <Field label="DESCRIPTION" error={state.errors?.description}>
             <input name="description" defaultValue={desc} placeholder="What was it for?" className="billd-input" maxLength={120} />

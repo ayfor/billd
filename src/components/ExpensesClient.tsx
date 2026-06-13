@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CategoryPill } from "@/components/CategoryPill";
 import { Money } from "@/components/Money";
 import { ExpenseModal, type EditableExpense } from "@/components/ExpenseModal";
+import { useQuickAdd } from "@/components/QuickAdd";
 import { formatCents } from "@/lib/money";
 
 export type ClientRow = {
@@ -28,7 +29,8 @@ export function ExpensesClient({
   rows: ClientRow[];
   categories: { id: string; name: string }[];
 }) {
-  const [modal, setModal] = useState<null | { mode: "create" } | { mode: "edit"; expense: EditableExpense }>(null);
+  const { openQuickAdd } = useQuickAdd();
+  const [editing, setEditing] = useState<EditableExpense | null>(null);
 
   return (
     <>
@@ -39,7 +41,7 @@ export function ExpensesClient({
             {total} {total === 1 ? "expense" : "expenses"} · {formatCents(totalCents)}
           </p>
         </div>
-        <button className="billd-btn billd-btn--primary" onClick={() => setModal({ mode: "create" })}>Add expense</button>
+        <button className="billd-btn billd-btn--primary" onClick={openQuickAdd}>Add expense</button>
       </header>
 
       <div className="px-panel px-raise">
@@ -49,7 +51,7 @@ export function ExpensesClient({
         {rows.map((r, i) => (
           <button
             key={r.id}
-            onClick={() => setModal({ mode: "edit", expense: { id: r.id, amountCents: r.amountCents, description: r.description, categoryId: r.category.id, dateISO: r.dateISO } })}
+            onClick={() => setEditing({ id: r.id, amountCents: r.amountCents, description: r.description, categoryId: r.category.id, dateISO: r.dateISO })}
             className="grid w-full items-center gap-4 px-5 py-3.5 text-left text-sm"
             style={{ gridTemplateColumns: "110px 1fr 180px 120px", borderTop: i === 0 ? "none" : "1px solid var(--border-soft)", color: "var(--text-body)" }}
           >
@@ -61,12 +63,12 @@ export function ExpensesClient({
         ))}
       </div>
 
-      {modal && (
+      {editing && (
         <ExpenseModal
-          mode={modal.mode}
+          mode="edit"
           categories={categories}
-          expense={modal.mode === "edit" ? modal.expense : undefined}
-          onClose={() => setModal(null)}
+          expense={editing}
+          onClose={() => setEditing(null)}
         />
       )}
     </>
