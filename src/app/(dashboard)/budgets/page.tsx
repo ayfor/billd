@@ -1,30 +1,22 @@
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { BudgetsClient, type ClientBudget } from "@/components/BudgetsClient";
+import { budgetStatuses } from "@/lib/queries/budgetStatus";
+import { BudgetsClient } from "@/components/BudgetsClient";
 
 export default async function BudgetsPage() {
   const user = await requireUser();
-  const [budgets, categories] = await Promise.all([
-    prisma.budget.findMany({
-      where: { userId: user.id },
-      include: { category: { select: { id: true, name: true, color: true } } },
-      orderBy: { createdAt: "asc" },
-    }),
+  const [statuses, categories] = await Promise.all([
+    budgetStatuses(user.id, new Date()),
     prisma.category.findMany({ where: { userId: user.id }, orderBy: { sortOrder: "asc" }, select: { id: true, name: true } }),
   ]);
 
-  const rows: ClientBudget[] = budgets.map((b) => ({
-    id: b.id,
-    categoryId: b.categoryId,
-    category: b.category,
-    amountCents: b.amountCents,
-    timespan: b.timespan as "monthly" | "yearly",
-  }));
+  const totalSpent = statuses.reduce((s, b) => s + b.spentCents, 0);
+  const totalBudget = statuses.reduce((s, b) => s + b.budgetCents, 0);
 
   return (
     <div className="flex flex-col gap-6">
       <h1 style={{ fontFamily: "var(--font-pixel)", fontSize: "var(--pixel-lg)", color: "var(--text-primary)" }}>BUDGETS</h1>
-      <BudgetsClient budgets={rows} categories={categories} />
+      <BudgetsClient statuses={statuses} categories={categories} totalSpent={totalSpent} totalBudget={totalBudget} />
     </div>
   );
 }

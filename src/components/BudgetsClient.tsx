@@ -3,39 +3,49 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createBudget, updateBudget, deleteBudget, type BudgetFormState } from "@/app/(dashboard)/budgets/actions";
 import { CategoryPill } from "@/components/CategoryPill";
-import { Money } from "@/components/Money";
+import { BudgetBar } from "@/components/BudgetBar";
+import { formatCents } from "@/lib/money";
 import { maskAmount } from "@/lib/amountMask";
-
-export type ClientBudget = {
-  id: string;
-  categoryId: string;
-  category: { id: string; name: string; color: string };
-  amountCents: number;
-  timespan: "monthly" | "yearly";
-};
+import type { BudgetStatus } from "@/lib/queries/budgetStatus";
 
 const initial: BudgetFormState = {};
 
-export function BudgetsClient({ budgets, categories }: { budgets: ClientBudget[]; categories: { id: string; name: string }[] }) {
-  const [modal, setModal] = useState<null | { mode: "create" } | { mode: "edit"; budget: ClientBudget }>(null);
+export function BudgetsClient({
+  statuses,
+  categories,
+  totalSpent,
+  totalBudget,
+}: {
+  statuses: BudgetStatus[];
+  categories: { id: string; name: string }[];
+  totalSpent: number;
+  totalBudget: number;
+}) {
+  const [modal, setModal] = useState<null | { mode: "create" } | { mode: "edit"; status: BudgetStatus }>(null);
   return (
     <>
       <div className="flex items-center justify-between">
-        <p className="text-sm" style={{ color: "var(--text-muted)" }}>{budgets.length} {budgets.length === 1 ? "budget" : "budgets"}</p>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          {statuses.length === 0 ? "No budgets yet" : `${formatCents(totalSpent)} of ${formatCents(totalBudget)} budgeted`}
+        </p>
         <button className="billd-btn billd-btn--primary" onClick={() => setModal({ mode: "create" })}>Add budget</button>
       </div>
 
-      {budgets.length === 0 ? (
+      {statuses.length === 0 ? (
         <div className="px-panel px-raise p-12 text-center" style={{ color: "var(--text-muted)" }}>Set your first budget to track spending against a limit.</div>
       ) : (
         <div className="flex flex-col gap-4">
-          {budgets.map((b) => (
-            <button key={b.id} onClick={() => setModal({ mode: "edit", budget: b })} className="px-panel px-raise flex items-center justify-between gap-4 p-5 text-left">
-              <span className="flex items-center gap-3">
-                <CategoryPill name={b.category.name} color={b.category.color} />
-                <span className="px-2 py-0.5 text-xs" style={{ border: "1px solid var(--border-strong)", color: "var(--text-muted)" }}>{b.timespan}</span>
-              </span>
-              <Money cents={b.amountCents} className="text-base" />
+          {statuses.map((s) => (
+            <button key={s.id} onClick={() => setModal({ mode: "edit", status: s })} className="px-panel px-raise flex flex-col gap-3 p-5 text-left">
+              <div className="flex items-center justify-between gap-4">
+                <span className="flex items-center gap-3">
+                  <CategoryPill name={s.category.name} color={s.category.color} />
+                  <span className="px-2 py-0.5 text-xs" style={{ border: "1px solid var(--border-strong)", color: "var(--text-muted)" }}>{s.timespan}</span>
+                </span>
+                <span className="tnum text-sm" style={{ color: "var(--text-primary)" }}>{formatCents(s.spentCents)} / {formatCents(s.budgetCents)}</span>
+              </div>
+              <BudgetBar ratio={s.ratio} over={s.over} />
+              <span className="text-xs" style={{ color: s.statusTone === "attention" ? "var(--amethyst)" : "var(--seaweed)", fontWeight: 600 }}>{s.statusLabel}</span>
             </button>
           ))}
         </div>
@@ -44,7 +54,7 @@ export function BudgetsClient({ budgets, categories }: { budgets: ClientBudget[]
       {modal && (
         <BudgetModal
           mode={modal.mode}
-          budget={modal.mode === "edit" ? modal.budget : undefined}
+          status={modal.mode === "edit" ? modal.status : undefined}
           categories={categories}
           onClose={() => setModal(null)}
         />
@@ -53,8 +63,8 @@ export function BudgetsClient({ budgets, categories }: { budgets: ClientBudget[]
   );
 }
 
-function BudgetModal({ mode, budget, categories, onClose }: { mode: "create" | "edit"; budget?: ClientBudget; categories: { id: string; name: string }[]; onClose: () => void }) {
-  const base = mode === "edit" && budget ? updateBudget.bind(null, budget.id) : createBudget;
+function BudgetModal({ mode, status, categories, onClose }: { mode: "create" | "edit"; status?: BudgetStatus; categories: { id: string; name: string }[]; onClose: () => void }) {
+  const base = mode === "edit" && status ? updateBudget.bind(null, status.id) : createBudget;
   const handled = useRef<BudgetFormState>(initial);
   const [confirm, setConfirm] = useState(false);
   const [state, formAction, pending] = useActionState<BudgetFormState, FormData>(async (prev, fd) => base(prev, fd), initial);
@@ -71,9 +81,9 @@ function BudgetModal({ mode, budget, categories, onClose }: { mode: "create" | "
   }, [onClose]);
 
   const v = state.values;
-  const cat = v?.categoryId ?? budget?.categoryId ?? categories[0]?.id ?? "";
-  const timespan = v?.timespan ?? budget?.timespan ?? "monthly";
-  const amount = v?.amount ?? (budget ? (budget.amountCents / 100).toFixed(2) : "");
+  const cat = v?.categoryId ?? status?.categoryId ?? categories[0]?.id ?? "";
+  const timespan = v?.timespan ?? status?.timespan ?? "monthly";
+  const amount = v?.amount ?? (status ? (status.budgetCents / 100).toFixed(2) : "");
 
   return (
     <div role="dialog" aria-modal="true" className="flex items-center justify-center" style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 50 }} onClick={onClose}>
@@ -103,7 +113,7 @@ function BudgetModal({ mode, budget, categories, onClose }: { mode: "create" | "
               confirm ? (
                 <span className="flex items-center gap-2 text-xs" style={{ color: "var(--amethyst)" }}>
                   Delete?
-                  <button type="button" onClick={async () => { await deleteBudget(budget!.id); onClose(); }} style={{ fontWeight: 600 }}>Yes</button>
+                  <button type="button" onClick={async () => { await deleteBudget(status!.id); onClose(); }} style={{ fontWeight: 600 }}>Yes</button>
                   <button type="button" onClick={() => setConfirm(false)} style={{ color: "var(--text-muted)" }}>No</button>
                 </span>
               ) : (
