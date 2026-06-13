@@ -1,6 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+const openQuickAdd = vi.fn();
+vi.mock("@/components/QuickAdd", () => ({ useQuickAdd: () => ({ openQuickAdd }) }));
 vi.mock("@/app/(dashboard)/expenses/actions", () => ({
   createExpense: vi.fn(),
   updateExpense: vi.fn(() => vi.fn()),
@@ -24,32 +26,18 @@ describe("ExpensesClient", () => {
     expect(amount).toHaveStyle({ textAlign: "right" });
   });
 
-  it("opens the create modal from the Add button", () => {
+  it("routes the Add button through the global quick-add", () => {
     render(<ExpensesClient total={1} totalCents={8432} rows={rows} categories={categories} />);
     fireEvent.click(screen.getByText("Add expense"));
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Add expense", { selector: "h2" })).toBeInTheDocument();
+    expect(openQuickAdd).toHaveBeenCalledOnce();
   });
 
-  it("opens the edit modal (prefilled) when a row is clicked", () => {
+  it("opens the edit modal (prefilled, with Delete, no Create another) on row click", () => {
     render(<ExpensesClient total={1} totalCents={8432} rows={rows} categories={categories} />);
     fireEvent.click(screen.getByText("Farm Boy run"));
     expect(screen.getByText("Edit expense", { selector: "h2" })).toBeInTheDocument();
-    expect((screen.getByDisplayValue("84.32") as HTMLInputElement)).toBeInTheDocument();
-  });
-
-  it("shows the 'Create another' checkbox in create mode only", () => {
-    render(<ExpensesClient total={1} totalCents={8432} rows={rows} categories={categories} />);
-    fireEvent.click(screen.getByText("Add expense"));
-    expect(screen.getByText("Create another")).toBeInTheDocument();
-    // not present when editing
-    fireEvent.keyDown(document, { key: "Escape" });
-  });
-
-  it("does not show 'Create another' in edit mode (shows Delete instead)", () => {
-    render(<ExpensesClient total={1} totalCents={8432} rows={rows} categories={categories} />);
-    fireEvent.click(screen.getByText("Farm Boy run"));
-    expect(screen.queryByText("Create another")).not.toBeInTheDocument();
+    expect(screen.getByDisplayValue("84.32")).toBeInTheDocument();
     expect(screen.getByText("Delete")).toBeInTheDocument();
+    expect(screen.queryByText("Create another")).not.toBeInTheDocument();
   });
 });
