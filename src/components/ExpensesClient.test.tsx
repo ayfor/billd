@@ -37,4 +37,19 @@ describe("ExpensesClient", () => {
     expect(screen.getByText("Edit expense", { selector: "h2" })).toBeInTheDocument();
     expect((screen.getByDisplayValue("84.32") as HTMLInputElement)).toBeInTheDocument();
   });
+
+  it("shows the 'Create another' checkbox in create mode only", () => {
+    render(<ExpensesClient total={1} totalCents={8432} rows={rows} categories={categories} />);
+    fireEvent.click(screen.getByText("Add expense"));
+    expect(screen.getByText("Create another")).toBeInTheDocument();
+    // not present when editing
+    fireEvent.keyDown(document, { key: "Escape" });
+  });
+
+  it("does not show 'Create another' in edit mode (shows Delete instead)", () => {
+    render(<ExpensesClient total={1} totalCents={8432} rows={rows} categories={categories} />);
+    fireEvent.click(screen.getByText("Farm Boy run"));
+    expect(screen.queryByText("Create another")).not.toBeInTheDocument();
+    expect(screen.getByText("Delete")).toBeInTheDocument();
+  });
 });

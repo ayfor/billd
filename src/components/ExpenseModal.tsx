@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createExpense, deleteExpense, updateExpense, type ExpenseFormState } from "@/app/(dashboard)/expenses/actions";
 
 export type EditableExpense = {
@@ -21,15 +21,42 @@ type Props = {
 const initial: ExpenseFormState = {};
 
 export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
-  const action = mode === "edit" && expense ? updateExpense.bind(null, expense.id) : createExpense;
-  const [state, formAction, pending] = useActionState(action, initial);
+  const baseAction = mode === "edit" && expense ? updateExpense.bind(null, expense.id) : createExpense;
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [createAnother, setCreateAnother] = useState(false);
+  const [flash, setFlash] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
   const today = new Date().toISOString().slice(0, 10);
 
+  // Handle the post-save side-effects in the action itself (not a useEffect),
+  // so success runs exactly once per submission.
+  const [state, formAction, pending] = useActionState<ExpenseFormState, FormData>(
+    async (prev, formData) => {
+      const result = await baseAction(prev, formData);
+      if (result.ok) {
+        if (mode === "create" && createAnother) {
+          // Keep the modal open for rapid entry: reset to a clean slate
+          // (empty amount/description, category + date back to defaults),
+          // refocus amount, flash a confirmation.
+          formRef.current?.reset();
+          amountRef.current?.focus();
+          setFlash(true);
+        } else {
+          onClose();
+        }
+      }
+      return result;
+    },
+    initial,
+  );
+
   useEffect(() => {
-    if (state.ok) onClose();
-  }, [state.ok, onClose]);
+    if (!flash) return;
+    const t = setTimeout(() => setFlash(false), 2000);
+    return () => clearTimeout(t);
+  }, [flash]);
 
   const v = state.values;
   const amount = v?.amount ?? (expense ? (expense.amountCents / 100).toFixed(2) : "");
@@ -53,11 +80,11 @@ export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
           <button type="button" onClick={onClose} className="text-xs" style={{ color: "var(--text-muted)" }} aria-label="Close">Esc ✕</button>
         </div>
 
-        <form action={formAction} className="flex flex-col gap-3.5">
+        <form ref={formRef} action={formAction} className="flex flex-col gap-3.5">
           {state.errors?.form && <p className="text-xs" style={{ color: "var(--amethyst)" }}>{state.errors.form}</p>}
 
           <Field label="AMOUNT" error={state.errors?.amount}>
-            <input name="amount" inputMode="decimal" defaultValue={amount} placeholder="$ 0.00" className="billd-input" autoFocus />
+            <input ref={amountRef} name="amount" inputMode="decimal" defaultValue={amount} placeholder="$ 0.00" className="billd-input" autoFocus />
           </Field>
           <Field label="DESCRIPTION" error={state.errors?.description}>
             <input name="description" defaultValue={desc} placeholder="What was it for?" className="billd-input" maxLength={120} />
@@ -84,9 +111,22 @@ export function ExpenseModal({ mode, categories, expense, onClose }: Props) {
               ) : (
                 <button type="button" onClick={() => setConfirmDelete(true)} className="text-xs" style={{ color: "color-mix(in srgb, var(--lavender-mist) 40%, transparent)" }}>Delete</button>
               )
-            ) : <span />}
-            <span className="flex gap-2">
-              <button type="button" onClick={onClose} className="billd-btn billd-btn--ghost">Cancel</button>
+            ) : (
+              <label className="flex cursor-pointer select-none items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                <input
+                  type="checkbox"
+                  name="createAnother"
+                  checked={createAnother}
+                  onChange={(e) => setCreateAnother(e.target.checked)}
+                  className="size-3.5"
+                  style={{ accentColor: "var(--electric-sapphire)" }}
+                />
+                Create another
+              </label>
+            )}
+            <span className="flex items-center gap-2">
+              {flash && <span className="text-xs" style={{ color: "var(--seaweed)" }} role="status">Saved ✓</span>}
+              <button type="button" onClick={onClose} className="billd-btn billd-btn--ghost">{mode === "create" && createAnother ? "Done" : "Cancel"}</button>
               <button type="submit" disabled={pending} className="billd-btn billd-btn--primary">{pending ? "Saving…" : "Save expense"}</button>
             </span>
           </div>
