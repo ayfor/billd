@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { categorySchema } from "@/lib/validation/category";
+import { categoryReferenceCount } from "@/lib/queries/categoryUsage";
 
 export type CategoryFormState = {
   ok?: boolean;
@@ -66,6 +67,24 @@ export async function updateCategory(id: string, _prev: CategoryFormState, formD
     data: { name: parsed.data.name, color: parsed.data.color },
   });
   if (res.count === 0) return { errors: { form: "That category couldn't be found." } };
+  revalidatePath("/categories");
+  revalidatePath("/expenses");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export async function deleteCategory(id: string): Promise<{ ok: boolean; blocked?: boolean; reason?: string }> {
+  const user = await requireUser();
+  const refs = await categoryReferenceCount(user.id, id);
+  if (refs > 0) {
+    return { ok: false, blocked: true, reason: `Used by ${refs} ${refs === 1 ? "expense" : "expenses"} — reassign or remove those first` };
+  }
+  try {
+    await prisma.category.deleteMany({ where: { id, userId: user.id } });
+  } catch {
+    // Backstop: DB onDelete:Restrict refused (a reference appeared between check and delete).
+    return { ok: false, blocked: true, reason: "This category is still in use" };
+  }
   revalidatePath("/categories");
   revalidatePath("/expenses");
   revalidatePath("/dashboard");

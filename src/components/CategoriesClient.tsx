@@ -3,8 +3,10 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createCategory, updateCategory, type CategoryFormState } from "@/app/(dashboard)/categories/actions";
 import { CategoryColorPicker } from "@/components/CategoryColorPicker";
+import { deleteCategory } from "@/app/(dashboard)/categories/actions";
+import { formatCents } from "@/lib/money";
 
-export type ClientCategory = { id: string; name: string; color: string };
+export type ClientCategory = { id: string; name: string; color: string; expenseCount: number; monthCents: number };
 
 const TOKEN: Record<string, string> = {
   sapphire: "var(--electric-sapphire)",
@@ -28,13 +30,7 @@ export function CategoriesClient({ categories }: { categories: ClientCategory[] 
 
       <div className="flex flex-wrap gap-5">
         {categories.map((c) => (
-          <div key={c.id} className="px-panel px-raise flex w-[260px] flex-col gap-2.5 p-5">
-            <div className="flex items-center gap-2.5">
-              <span aria-hidden className="size-4" style={{ background: TOKEN[c.color] ?? TOKEN.sapphire, border: "1px solid var(--border-strong)" }} />
-              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.name}</span>
-            </div>
-            <button onClick={() => setModal({ mode: "edit", category: c })} className="self-start text-xs" style={{ color: "var(--electric-sapphire)" }}>Edit</button>
-          </div>
+          <CategoryCard key={c.id} category={c} onEdit={() => setModal({ mode: "edit", category: c })} />
         ))}
       </div>
 
@@ -46,6 +42,36 @@ export function CategoriesClient({ categories }: { categories: ClientCategory[] 
         />
       )}
     </>
+  );
+}
+
+function CategoryCard({ category, onEdit }: { category: ClientCategory; onEdit: () => void }) {
+  const [confirm, setConfirm] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [blocked, setBlocked] = useState<string | null>(null);
+  return (
+    <div className="px-panel px-raise flex w-[260px] flex-col gap-2.5 p-5">
+      <div className="flex items-center gap-2.5">
+        <span aria-hidden className="size-4" style={{ background: TOKEN[category.color] ?? TOKEN.sapphire, border: "1px solid var(--border-strong)" }} />
+        <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{category.name}</span>
+      </div>
+      <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+        {category.expenseCount} {category.expenseCount === 1 ? "expense" : "expenses"} · {formatCents(category.monthCents)} this month
+      </p>
+      {blocked && <p className="text-xs" style={{ color: "var(--amethyst)" }}>{blocked}</p>}
+      <div className="flex items-center gap-3 text-xs">
+        <button onClick={onEdit} style={{ color: "var(--electric-sapphire)" }}>Edit</button>
+        {confirm ? (
+          <span className="flex items-center gap-2" style={{ color: "var(--amethyst)" }}>
+            Delete?
+            <button disabled={busy} onClick={async () => { setBusy(true); const r = await deleteCategory(category.id); if (!r.ok) { setBlocked(r.reason ?? "Couldn't delete"); setConfirm(false); setBusy(false); } }} style={{ fontWeight: 600 }}>Yes</button>
+            <button onClick={() => setConfirm(false)} style={{ color: "var(--text-muted)" }}>No</button>
+          </span>
+        ) : (
+          <button onClick={() => { setBlocked(null); setConfirm(true); }} style={{ color: "color-mix(in srgb, var(--lavender-mist) 40%, transparent)" }}>Delete</button>
+        )}
+      </div>
+    </div>
   );
 }
 
