@@ -52,12 +52,12 @@ export type ProjectionStatus = {
 
 // Projection panel state. Reuses projectMonthEnd so the chart endpoint and this
 // numeral are always the same number. "Too early to call" under 3 days elapsed.
-export function projectionStatus(spentCents: number, expectedCents: number, now: Date): ProjectionStatus {
+export function projectionStatus(spentCents: number, expectedCents: number, now: Date, scheduledRemainingCents = 0): ProjectionStatus {
   const elapsed = now.getUTCDate();
   if (elapsed < 3) {
     return { tooEarly: true, projectedCents: 0, onPace: true, label: "Too early to call", tone: "muted" };
   }
-  const projectedCents = projectMonthEnd(spentCents, now);
+  const projectedCents = projectMonthEnd(spentCents, now) + scheduledRemainingCents;
   if (expectedCents <= 0) {
     return { tooEarly: false, projectedCents, onPace: true, label: "Projected month end", tone: "muted" };
   }

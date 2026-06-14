@@ -33,6 +33,7 @@ erDiagram
         int amountCents
         string description
         date date
+        string generatedFromId "nullable → RecurringTemplate"
         datetime createdAt
         datetime updatedAt
     }

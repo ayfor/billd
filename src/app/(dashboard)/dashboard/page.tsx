@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { dashboardSummary } from "@/lib/queries/dashboard";
 import { dailyCumulative, projectMonthEnd, daysInCurrentMonth, projectionStatus } from "@/lib/queries/spendSeries";
+import { generateDue, scheduledRemainingThisMonth } from "@/lib/recurringGeneration";
 import { SpendChart, type ChartPoint } from "@/components/SpendChart";
 import { ProjectionPanel } from "@/components/ProjectionPanel";
 import { formatCents } from "@/lib/money";
@@ -12,6 +13,9 @@ import { RecentExpenses } from "@/components/RecentExpenses";
 
 export default async function DashboardPage() {
   const user = await requireUser();
+  const nowForGen = new Date();
+  await generateDue(user.id, nowForGen); // catch-up on access: post any due recurring expenses
+  const scheduledRemaining = await scheduledRemainingThisMonth(user.id, nowForGen);
   const [summary, categories] = await Promise.all([
     dashboardSummary(user.id, new Date()),
     prisma.category.findMany({ where: { userId: user.id }, orderBy: { sortOrder: "asc" }, select: { id: true, name: true } }),
@@ -23,7 +27,7 @@ export default async function DashboardPage() {
   const today = now.getUTCDate();
   const dim = daysInCurrentMonth(now);
   const projectedEnd = projectMonthEnd(spentCents, now);
-  const projection = projectionStatus(spentCents, expectedCents, now);
+  const projection = projectionStatus(spentCents, expectedCents, now, scheduledRemaining);
   const chartPoints: ChartPoint[] = [];
   for (let day = 1; day <= dim; day++) {
     const actualPt = cumulative.find((c) => c.day === day);
