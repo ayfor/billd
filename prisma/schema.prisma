@@ -20,6 +20,7 @@ model User {
   categories   Category[]
   expenses     Expense[]
   budgets      Budget[]
+  recurring    RecurringTemplate[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -36,9 +37,41 @@ model Category {
 
   expenses  Expense[]
   budgets   Budget[]
+  recurring RecurringTemplate[]
 
   @@unique([userId, name])
   @@index([userId])
+}
+
+model RecurringTemplate {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  name        String
+  amountCents Int
+  frequency   String          // weekly | monthly | yearly
+  anchorDay   Int             // weekly: weekday 0-6; monthly: day 1-31; yearly: month*100+day
+  startDate   DateTime        @db.Date
+  active      Boolean         @default(true)
+  postings    PostingLedger[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model PostingLedger {
+  id            String            @id @default(cuid())
+  templateId    String
+  template      RecurringTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  scheduledDate DateTime          @db.Date
+  expenseId     String?
+  createdAt     DateTime          @default(now())
+
+  @@unique([templateId, scheduledDate])
 }
 
 model Budget {
