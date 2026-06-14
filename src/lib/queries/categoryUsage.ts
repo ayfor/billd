@@ -25,9 +25,10 @@ export async function categoryUsage(userId: string): Promise<Record<string, Cate
 // Count of records that block deleting a category. Expenses now; budgets &
 // recurring templates are added to this sum when those models land (F4/F6).
 export async function categoryReferenceCount(userId: string, categoryId: string): Promise<number> {
-  const [expenses, budgets] = await Promise.all([
+  const [expenses, budgets, recurring] = await Promise.all([
     prisma.expense.count({ where: { userId, categoryId } }),
     prisma.budget.count({ where: { userId, categoryId } }),
+    prisma.recurringTemplate.count({ where: { userId, categoryId } }),
   ]);
-  return expenses + budgets;
+  return expenses + budgets + recurring;
 }

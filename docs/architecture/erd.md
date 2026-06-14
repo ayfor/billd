@@ -46,7 +46,27 @@ erDiagram
         datetime updatedAt
     }
     %% unique: BUDGET(userId, categoryId, timespan)
-    %% S6.1 adds RECURRING_TEMPLATE + POSTING_LEDGER
+    USER ||--o{ RECURRING_TEMPLATE : schedules
+    CATEGORY ||--o{ RECURRING_TEMPLATE : classifies
+    RECURRING_TEMPLATE ||--o{ POSTING_LEDGER : posts
+    RECURRING_TEMPLATE {
+        string id PK
+        string userId FK
+        string categoryId FK
+        string name
+        int amountCents
+        string frequency "weekly|monthly|yearly"
+        int anchorDay
+        date startDate
+        boolean active
+    }
+    POSTING_LEDGER {
+        string id PK
+        string templateId FK
+        date scheduledDate
+        string expenseId "nullable"
+    }
+    %% unique: POSTING_LEDGER(templateId, scheduledDate) — idempotency for S6.2
 ```
 
 ## Conventions
