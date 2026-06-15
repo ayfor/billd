@@ -2,12 +2,16 @@
   "name": "billd",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:report": "node scripts/test-report.mjs",
     "test:e2e": "playwright test",
     "postinstall": "prisma generate",
     "seed": "tsx prisma/seed.ts"
